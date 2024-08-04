@@ -1,7 +1,6 @@
 const BACKEND_URL = "http://0.0.0.0:8080"
 
 export async function createWord(word: string, synonyms: string[]): Promise<Response> {
-    console.log(BACKEND_URL);
     return await fetch(`${BACKEND_URL}/word`, {
         method: "POST",
         body: JSON.stringify({
