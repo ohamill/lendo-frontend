@@ -1,4 +1,3 @@
-import {WordsResponse} from "../data/WordsResponse.ts";
 import {SynonymsResponse} from "../data/SynonymsResponse.ts";
 
 const BACKEND_URL = "http://localhost:8080"

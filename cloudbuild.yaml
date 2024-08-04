@@ -1,0 +1,29 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '-t', '${_WEB_FULL_IMAGE_PATH}',
+      '.'
+    ]
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [ 'push', '${_WEB_FULL_IMAGE_PATH}' ]
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args: [
+      'run',
+      'deploy', '${_WEB_CLOUD_RUN_SERVICE_NAME}',
+      '--image', '${_WEB_FULL_IMAGE_PATH}',
+      '--region', '${_IMAGE_REGION}',
+      '--allow-unauthenticated'
+    ]
+images:
+  - '${_WEB_FULL_IMAGE_PATH}'
+substitutions:
+  _WEB_FULL_IMAGE_PATH: ${_IMAGE_REGION}-docker.pkg.dev/${PROJECT_ID}/${_ARTIFACT_REGISTRY_NAME}/${_WEB_IMAGE_NAME}
+  _ARTIFACT_REGISTRY_NAME: lendo
+  _WEB_IMAGE_NAME: web
+  _IMAGE_REGION: europe-west1
+  _WEB_CLOUD_RUN_SERVICE_NAME: lendo-web
+options:
+  dynamicSubstitutions: true
+  logging: CLOUD_LOGGING_ONLY
