@@ -2,6 +2,7 @@ import {useState} from "react";
 import {Alert, CircularProgress, Divider, Snackbar, Stack, TextField, Typography} from "@mui/material";
 import {getSynonyms} from "./api/api.ts";
 import SynonymList from "./SynonymList.tsx";
+import {OperationStatus} from "./data/OperationStatus.ts";
 
 interface SearchWordProps {
     onAddSynonym: (s: string) => void;
@@ -9,17 +10,17 @@ interface SearchWordProps {
 
 export default function SearchWord({ onAddSynonym }: SearchWordProps) {
     const [ searchTerm, setSearchTerm ] = useState<string>("");
-    const [ searchError, setSearchError ] = useState<boolean>(false);
-    const [ searchingSynonyms, setSearchingSynonyms ] = useState<boolean>(false);
+    const [ searchStatus, setSearchStatus ] = useState<OperationStatus>(OperationStatus.None);
     const [ synonyms, setSynonyms ] = useState<string[]>([]);
-    const showSynonyms = synonyms.length > 0;
 
     function fetchSynonyms(word: string) {
-        setSearchingSynonyms(true);
+        setSearchStatus(OperationStatus.Loading);
         getSynonyms(word)
-            .then(resp => setSynonyms(resp.synonyms))
-            .catch(() => setSearchError(true))
-            .finally(() => setSearchingSynonyms(false))
+            .then(resp => {
+                setSynonyms(resp.synonyms);
+                setSearchStatus(OperationStatus.Success);
+            })
+            .catch(() => setSearchStatus(OperationStatus.Failed))
     }
 
     return (
@@ -35,22 +36,25 @@ export default function SearchWord({ onAddSynonym }: SearchWordProps) {
                     </Divider>
                 }
             >
-                <TextField
-                    label={"word"}
-                    variant={"outlined"}
-                    size={"small"}
-                    value={searchTerm}
-                    onChange={(e) => {
-                        setSearchTerm(e.target.value);
+                <form
+                    onSubmit={e => {
+                        e.preventDefault();
+                        fetchSynonyms(searchTerm);
                     }}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                            fetchSynonyms(searchTerm);
-                        }
-                    }}
-                />
+                >
+                    <TextField
+                        label={"word"}
+                        variant={"outlined"}
+                        size={"small"}
+                        value={searchTerm}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                        }}
+                        required
+                    />
+                </form>
                 {
-                    showSynonyms && (
+                    searchStatus === OperationStatus.Success && (
                         <SynonymList
                             synonyms={synonyms}
                             onClick={(s: string) => {
@@ -64,15 +68,14 @@ export default function SearchWord({ onAddSynonym }: SearchWordProps) {
                     )
                 }
                 {
-                    searchingSynonyms && (
-                        <CircularProgress />
+                    searchStatus === OperationStatus.Loading && (
+                        <CircularProgress/>
                     )
                 }
             </Stack>
             {
-                <Snackbar open={searchError} autoHideDuration={3000} onClose={() => setSearchError(false)}>
+                <Snackbar open={searchStatus === OperationStatus.Failed} autoHideDuration={3000} onClose={() => setSearchStatus(OperationStatus.None)}>
                     <Alert
-                        onClose={() => setSearchError(false)}
                         severity="error"
                         variant="filled"
                         sx={{ width: '100%' }}
