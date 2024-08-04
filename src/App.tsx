@@ -4,7 +4,7 @@ import {useState} from "react";
 import {TabAction} from "./data/Action.ts";
 
 function App() {
-    const [ value, setValue ] = useState<TabAction>(TabAction.AddWord);
+    const [ value, setValue ] = useState<TabAction>(sessionStorage.getItem("activeTab") as TabAction ?? TabAction.AddWord);
 
   return (
     <div style={{
