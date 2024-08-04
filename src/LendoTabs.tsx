@@ -24,10 +24,15 @@ export default function LendoTabs({ value, setValue }: LendoTabsProps) {
         setValue(TabAction.AddSynonym);
     }
 
+    function onTabChange(tab: string) {
+        setValue(tab as TabAction);
+        sessionStorage.setItem("activeTab", tab);
+    }
+
     return (
         <TabContext value={value}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <TabList onChange={(_, v) => setValue(v)} aria-label="lab API tabs example">
+                <TabList onChange={(_, v) => onTabChange(v)} aria-label="lab API tabs example">
                     <Tab label={
                         <Stack
                             direction={"row"}
