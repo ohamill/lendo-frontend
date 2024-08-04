@@ -27,10 +27,6 @@ export async function getSynonyms(word: string): Promise<SynonymsResponse> {
     return getAndSerialize<SynonymsResponse>(`${BACKEND_URL}/synonyms/${word}`);
 }
 
-export async function getWords(): Promise<WordsResponse> {
-    return getAndSerialize<WordsResponse>(`${BACKEND_URL}/words`);
-}
-
 async function getAndSerialize<T>(url: string): Promise<T> {
     return fetch(url, {
         method: "GET",
