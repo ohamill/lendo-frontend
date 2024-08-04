@@ -7,6 +7,7 @@ import {createWord} from "./api/api.ts";
 export default function AddWord() {
     const [ word, setWord ] = useState<string>("");
     const [ wordError, setWordError ] = useState<boolean>(false);
+    const [ uploadSuccess, setUploadSuccess ] = useState<boolean>(false);
     const [ uploadError, setUploadError ] = useState<boolean>(false);
     const [ synonymValue, setSynonymValue ] = useState<string>("");
     const [ synonyms, setSynonyms ] = useState<Set<string>>(new Set());
@@ -17,7 +18,11 @@ export default function AddWord() {
             return;
         }
         createWord(word, Array.from(synonyms))
-            .then(() => {
+            .then(resp => {
+                if (!resp.ok) {
+                    throw new Error(resp.statusText);
+                }
+                setUploadSuccess(true);
                 resetState();
             })
             .catch(() => {
@@ -98,7 +103,7 @@ export default function AddWord() {
                 </Button>
             </Stack>
             {
-                <Snackbar open={uploadError} autoHideDuration={6000} onClose={() => setUploadError(false)}>
+                <Snackbar open={uploadError} autoHideDuration={3000} onClose={() => setUploadError(false)}>
                     <Alert
                         onClose={() => setUploadError(false)}
                         severity="error"
@@ -106,6 +111,18 @@ export default function AddWord() {
                         sx={{ width: '100%' }}
                     >
                         Failed to create word, please try again.
+                    </Alert>
+                </Snackbar>
+            }
+            {
+                <Snackbar open={uploadSuccess} autoHideDuration={3000} onClose={() => setUploadSuccess(false)}>
+                    <Alert
+                        onClose={() => setUploadSuccess(false)}
+                        severity="success"
+                        variant="filled"
+                        sx={{ width: '100%' }}
+                    >
+                        Word created successfully!
                     </Alert>
                 </Snackbar>
             }
