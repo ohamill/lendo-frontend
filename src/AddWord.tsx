@@ -1,111 +1,51 @@
-import {Alert, Button, Divider, Snackbar, Stack, TextField} from "@mui/material";
+import {Alert, Button, Snackbar, Stack, TextField} from "@mui/material";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import {useState} from "react";
-import SynonymChip from "./SynonymChip.tsx";
+import {FormEvent, useState} from "react";
 import {createWord} from "./api/api.ts";
+import {OperationStatus} from "./data/OperationStatus.ts";
 
 export default function AddWord() {
     const [ word, setWord ] = useState<string>("");
-    const [ wordError, setWordError ] = useState<boolean>(false);
-    const [ uploadSuccess, setUploadSuccess ] = useState<boolean>(false);
-    const [ uploadError, setUploadError ] = useState<boolean>(false);
-    const [ synonymValue, setSynonymValue ] = useState<string>("");
-    const [ synonyms, setSynonyms ] = useState<Set<string>>(new Set());
+    const [ uploadStatus, setUploadStatus ] = useState<OperationStatus>(OperationStatus.None);
 
-    function submitWord() {
-        if (word === "") {
-            setWordError(true);
-            return;
-        }
-        createWord(word, Array.from(synonyms))
+    function submitWord(e: FormEvent) {
+        e.preventDefault();
+        createWord(word)
             .then(resp => {
                 if (!resp.ok) {
                     throw new Error(resp.statusText);
                 }
-                setUploadSuccess(true);
-                resetState();
+                setUploadStatus(OperationStatus.Success);
             })
-            .catch(() => {
-                setUploadError(true);
-            })
-    }
-
-    function resetState() {
-        setWord("");
-        setWordError(false);
-        setSynonymValue("");
-        setSynonyms(new Set());
+            .catch(() => setUploadStatus(OperationStatus.Failed))
+            .finally(() => setWord(""))
     }
 
     return (
         <>
-            <Stack
-                spacing={2}
-                divider={<Divider/>}
-            >
-                <TextField
-                    label={"word"}
-                    variant={"outlined"}
-                    size={"small"}
-                    value={word}
-                    onChange={(e) => {
-                        if (e.target.value !== "") {
-                            setWordError(false);
-                        }
-                        setWord(e.target.value)
-                    }}
-                    error={wordError}
-                    helperText={wordError ? "Word cannot be blank" : null}
-                />
-                <Stack spacing={1}>
+            <form onSubmit={submitWord}>
+                <Stack spacing={2}>
                     <TextField
-                        label={"synonyms"}
+                        label={"word"}
                         variant={"outlined"}
                         size={"small"}
-                        value={synonymValue}
-                        onChange={e => setSynonymValue(e.target.value)}
-                        onKeyDown={e => {
-                            if (e.key === "Enter" && synonymValue !== "") {
-                                setSynonyms(prevSynonyms => {
-                                    prevSynonyms.add(synonymValue);
-                                    return prevSynonyms;
-                                })
-                                setSynonymValue("");
-                            }
-                        }}
+                        value={word}
+                        onChange={(e) => setWord(e.target.value)}
+                        required
                     />
-                    <Stack direction={"row"} spacing={1}>
-                        {
-                            Array.from(synonyms.values()).map((synonym, i) => {
-                                return (
-                                    <SynonymChip
-                                        key={i}
-                                        word={synonym}
-                                        onCancel={() => {
-                                            setSynonyms(prevSynonyms => {
-                                                prevSynonyms.delete(synonym);
-                                                return new Set(prevSynonyms)
-                                            })
-                                        }}
-                                    />
-                                )
-                            })
-                        }
-                    </Stack>
+                    <Button
+                        variant={"contained"}
+                        color={"primary"}
+                        startIcon={<CheckCircleIcon/>}
+                        type="submit"
+                    >
+                        Submit
+                    </Button>
                 </Stack>
-                <Button
-                    variant={"contained"}
-                    color={"primary"}
-                    startIcon={<CheckCircleIcon/>}
-                    onClick={() => submitWord()}
-                >
-                    Submit
-                </Button>
-            </Stack>
+            </form>
             {
-                <Snackbar open={uploadError} autoHideDuration={3000} onClose={() => setUploadError(false)}>
+                <Snackbar open={uploadStatus === OperationStatus.Failed} autoHideDuration={3000} onClose={() => setUploadStatus(OperationStatus.None)}>
                     <Alert
-                        onClose={() => setUploadError(false)}
                         severity="error"
                         variant="filled"
                         sx={{ width: '100%' }}
@@ -115,9 +55,8 @@ export default function AddWord() {
                 </Snackbar>
             }
             {
-                <Snackbar open={uploadSuccess} autoHideDuration={3000} onClose={() => setUploadSuccess(false)}>
+                <Snackbar open={uploadStatus === OperationStatus.Success} autoHideDuration={3000} onClose={() => setUploadStatus(OperationStatus.None)}>
                     <Alert
-                        onClose={() => setUploadSuccess(false)}
                         severity="success"
                         variant="filled"
                         sx={{ width: '100%' }}

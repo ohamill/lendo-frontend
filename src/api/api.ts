@@ -3,22 +3,21 @@ import {SynonymsResponse} from "../data/SynonymsResponse.ts";
 
 const BACKEND_URL = "http://localhost:8080"
 
-export async function createWord(word: string, synonyms: string[]): Promise<Response> {
+export async function createWord(word: string): Promise<Response> {
     return await fetch(`${BACKEND_URL}/word`, {
         method: "POST",
         body: JSON.stringify({
             word: word,
-            synonyms: synonyms
         }),
         mode: "cors"
     })
 }
 
-export async function addSynonyms(word: string, synonyms: string[]): Promise<Response> {
-    return await fetch(`${BACKEND_URL}/synonyms/${word}`, {
+export async function addSynonym(word: string, synonym: string): Promise<Response> {
+    return await fetch(`${BACKEND_URL}/synonym/${word}`, {
         method: "POST",
         body: JSON.stringify({
-            synonyms: synonyms
+            synonym: synonym
         }),
         mode: "cors"
     })

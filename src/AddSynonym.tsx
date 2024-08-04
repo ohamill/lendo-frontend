@@ -1,152 +1,87 @@
-import {Alert, Autocomplete, Button, Divider, Snackbar, Stack, TextField, Tooltip} from "@mui/material";
-import SynonymChip from "./SynonymChip.tsx";
+import {Alert, Button, Snackbar, Stack, TextField} from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import {addSynonyms, getWords} from "./api/api.ts";
-import {useEffect, useState} from "react";
+import {addSynonym} from "./api/api.ts";
+import {FormEvent, useState} from "react";
+import {OperationStatus} from "./data/OperationStatus.ts";
 
 interface AddSynonymProps {
     initialWord: string;
 }
 
 export default function AddSynonym({ initialWord }: AddSynonymProps) {
-    const [ word, setWord ] = useState<string | null>(initialWord);
-    const [ words, setWords ] = useState<string[]>([]);
-    const [ synonymValue, setSynonymValue ] = useState<string>("");
-    const [ synonyms, setSynonyms ] = useState<Set<string>>(new Set());
-    const [ fetchWordsLoading, setFetchWordsLoading ] = useState<boolean>(true);
-    const [ fetchWordsError, setFetchWordsError ] = useState<boolean>(false);
-    const [ autocompleteDisabled, setAutocompleteDisabled ] = useState<boolean>(false);
-    const [ uploadError, setUploadError ] = useState<boolean>(false);
-    const [ uploadSuccess, setUploadSuccess ] = useState<boolean>(false);
-
-    useEffect(() => {
-        getWords()
-            .then(resp => setWords(resp.words))
-            .catch(() => {
-                setFetchWordsError(true);
-                setAutocompleteDisabled(true);
-            })
-            .finally(() => setFetchWordsLoading(false))
-    }, []);
+    const [ word, setWord ] = useState<string>(initialWord);
+    const [ synonym, setSynonym ] = useState<string>("");
+    const [ uploadStatus, setUploadStatus ] = useState<OperationStatus>(OperationStatus.None);
 
     function resetState() {
-        setWord(null);
-        setSynonymValue("");
-        setSynonyms(new Set());
+        setWord("");
+        setSynonym("");
+    }
+
+    function submitSynonym(e: FormEvent) {
+        e.preventDefault();
+        addSynonym(word, synonym)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(response.statusText);
+                }
+                setUploadStatus(OperationStatus.Success);
+                resetState();
+            })
+            .catch(() => setUploadStatus(OperationStatus.Failed))
     }
 
     return (
         <>
-            <Stack
-                spacing={2}
-                divider={<Divider/>}
-            >
-                <Tooltip
-                    title="Something went wrong while fetching words. Please refresh the page and try again."
-                    arrow
-                    disableHoverListener={!autocompleteDisabled}
-                    disableTouchListener={!autocompleteDisabled}
-                    disableFocusListener={!autocompleteDisabled}
+            <form onSubmit={submitSynonym}>
+                <Stack
+                    spacing={2}
                 >
-                    <Autocomplete
-                        renderInput={params => <TextField {...params} label="Word" />}
-                        options={words}
-                        value={word}
-                        onChange={(_, value) => setWord(value)}
-                        loading={fetchWordsLoading}
-                        disabled={autocompleteDisabled}
-                        disabledItemsFocusable={false}
-                    />
-                </Tooltip>
-                <Stack spacing={1}>
                     <TextField
-                        label={"synonyms"}
+                        required
+                        value={word}
+                        onChange={e => setWord(e.target.value)}
+                        label={"word"}
                         variant={"outlined"}
                         size={"small"}
-                        value={synonymValue}
-                        onChange={e => setSynonymValue(e.target.value)}
-                        onKeyDown={e => {
-                            if (e.key === "Enter" && synonymValue !== "") {
-                                setSynonyms(prevSynonyms => {
-                                    return prevSynonyms.add(synonymValue);
-                                })
-                                setSynonymValue("");
-                            }
-                        }}
                     />
-                    <Stack direction={"row"} spacing={1}>
-                        {
-                            Array.from(synonyms.values()).map((synonym, i) => {
-                                return (
-                                    <SynonymChip
-                                        key={i}
-                                        word={synonym}
-                                        onCancel={() => {
-                                            setSynonyms(prevSynonyms => {
-                                                prevSynonyms.delete(synonym);
-                                                return new Set(prevSynonyms)
-                                            })
-                                        }}
-                                    />
-                                )
-                            })
-                        }
-                    </Stack>
+                    <TextField
+                        required
+                        value={synonym}
+                        onChange={e => setSynonym(e.target.value)}
+                        label={"synonym"}
+                        variant={"outlined"}
+                        size={"small"}
+                    />
+                    <Button
+                        variant={"contained"}
+                        color={"primary"}
+                        startIcon={<CheckCircleIcon/>}
+                        type="submit"
+                    >
+                        Submit
+                    </Button>
                 </Stack>
-                <Button
-                    variant={"contained"}
-                    color={"primary"}
-                    startIcon={<CheckCircleIcon/>}
-                    onClick={() => {
-                        if (word !== null) {
-                            addSynonyms(word!, Array.from(synonyms))
-                                .then(response => {
-                                    if (!response.ok) {
-                                        throw new Error(response.statusText);
-                                    }
-                                    setUploadSuccess(true);
-                                    resetState();
-                                })
-                                .catch(() => setUploadError(true))
-                        }
-                    }}
-                >
-                    Submit
-                </Button>
-            </Stack>
+            </form>
             {
-                <Snackbar open={fetchWordsError} autoHideDuration={3000} onClose={() => setFetchWordsError(false)}>
+                <Snackbar open={uploadStatus === OperationStatus.Failed} autoHideDuration={3000} onClose={() => setUploadStatus(OperationStatus.None)}>
                     <Alert
-                        onClose={() => setFetchWordsError(false)}
                         severity="error"
                         variant="filled"
                         sx={{ width: '100%' }}
                     >
-                        Failed to fetch all words, please refresh the page and try again.
+                        Failed to create synonyms, please try again.
                     </Alert>
                 </Snackbar>
             }
             {
-                <Snackbar open={uploadError} autoHideDuration={3000} onClose={() => setUploadError(false)}>
+                <Snackbar open={uploadStatus === OperationStatus.Success} autoHideDuration={3000} onClose={() => setUploadStatus(OperationStatus.Success)}>
                     <Alert
-                        onClose={() => setUploadError(false)}
-                        severity="error"
-                        variant="filled"
-                        sx={{ width: '100%' }}
-                    >
-                        Failed to create synonym, please try again.
-                    </Alert>
-                </Snackbar>
-            }
-            {
-                <Snackbar open={uploadSuccess} autoHideDuration={3000} onClose={() => setUploadSuccess(false)}>
-                    <Alert
-                        onClose={() => setUploadSuccess(false)}
                         severity="success"
                         variant="filled"
                         sx={{ width: '100%' }}
                     >
-                        Synonym created successfully!
+                        Synonyms created successfully!
                     </Alert>
                 </Snackbar>
             }
