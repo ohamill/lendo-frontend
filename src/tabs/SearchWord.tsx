@@ -47,9 +47,7 @@ export default function SearchWord({ onAddSynonym }: SearchWordProps) {
                         variant={"outlined"}
                         size={"small"}
                         value={searchTerm}
-                        onChange={(e) => {
-                            setSearchTerm(e.target.value);
-                        }}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                         required
                     />
                 </form>

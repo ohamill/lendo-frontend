@@ -16,6 +16,7 @@ interface LendoTabsProps {
     setValue: (ta: TabAction) => void;
 }
 
+// Manages tabs and the state that is shared between them
 export default function LendoTabs({ value, setValue }: LendoTabsProps) {
     const [ initialWord, setInitialWord ] = useState<string>("");
 
@@ -26,52 +27,62 @@ export default function LendoTabs({ value, setValue }: LendoTabsProps) {
 
     function onTabChange(tab: string) {
         setValue(tab as TabAction);
+        // Remembers the active tab on page refresh
         sessionStorage.setItem("activeTab", tab);
     }
 
     return (
         <TabContext value={value}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <TabList onChange={(_, v) => onTabChange(v)} aria-label="lab API tabs example">
-                    <Tab label={
-                        <Stack
-                            direction={"row"}
-                            spacing={1}
-                            alignItems={"center"}
-                            justifyContent={"center"}
-                        >
-                            <AddCircleIcon />
-                            <Typography variant={"body2"}>
-                                New Word
-                            </Typography>
-                        </Stack>
-                    } value={TabAction.AddWord} />
-                    <Tab label={
-                        <Stack
-                            direction={"row"}
-                            spacing={1}
-                            alignItems={"center"}
-                            justifyContent={"center"}
-                        >
-                            <EditIcon />
-                            <Typography variant={"body2"}>
-                                New Synonym
-                            </Typography>
-                        </Stack>
-                    } value={TabAction.AddSynonym} />
-                    <Tab label={
-                        <Stack
-                            direction={"row"}
-                            spacing={1}
-                            alignItems={"center"}
-                            justifyContent={"center"}
-                        >
-                            <SearchIcon />
-                            <Typography variant={"body2"}>
-                                Search
-                            </Typography>
-                        </Stack>
-                    } value={TabAction.SearchWords} />
+                <TabList onChange={(_, v) => onTabChange(v)} aria-label="Lendo API tabs">
+                    <Tab
+                        label={
+                            <Stack
+                                direction={"row"}
+                                spacing={1}
+                                alignItems={"center"}
+                                justifyContent={"center"}
+                            >
+                                <AddCircleIcon />
+                                <Typography variant={"body2"}>
+                                    New Word
+                                </Typography>
+                            </Stack>
+                        }
+                        value={TabAction.AddWord}
+                    />
+                    <Tab
+                        label={
+                            <Stack
+                                direction={"row"}
+                                spacing={1}
+                                alignItems={"center"}
+                                justifyContent={"center"}
+                            >
+                                <EditIcon />
+                                <Typography variant={"body2"}>
+                                    New Synonym
+                                </Typography>
+                            </Stack>
+                        }
+                        value={TabAction.AddSynonym}
+                    />
+                    <Tab
+                        label={
+                            <Stack
+                                direction={"row"}
+                                spacing={1}
+                                alignItems={"center"}
+                                justifyContent={"center"}
+                            >
+                                <SearchIcon />
+                                <Typography variant={"body2"}>
+                                    Search
+                                </Typography>
+                            </Stack>
+                        }
+                        value={TabAction.SearchWords}
+                    />
                 </TabList>
             </Box>
             <TabPanel value={TabAction.AddWord}>
