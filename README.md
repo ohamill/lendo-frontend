@@ -1,30 +1,13 @@
-# React + TypeScript + Vite
+## Lendo Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Structure
+The app is built with React and consists of one main page with three tabs - one for each operation (add a word, add a synonym, and view a word's synonyms). User input is handled with controlled forms - the `<form>` tag is used to manage required fields and handle submission to the backend, while the form's inputs are managed with React's `useState` hook.
 
-Currently, two official plugins are available:
+## Success / Error / Loading
+The status of each API call is tracked by the enclosing component, and feedback is provided to the user about an operation's status once it finishes. This feedback takes the form of snackbars in the lower left corner of the screen.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Running locally
+The app can be run locally via `npm run dev`. This will run the app at `localhost:5173`.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json', './tsconfig.app.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## Public Deployment
+The app has been deployed publicly to GCP's Cloud Run, and can be accessed at [https://lendo-web-k3tawfx6ta-ew.a.run.app](https://lendo-web-k3tawfx6ta-ew.a.run.app). Deployment is managed by the `cloudbuild.yaml` file in the project's root directory.
