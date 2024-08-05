@@ -1,7 +1,6 @@
-import {WordsResponse} from "../data/WordsResponse.ts";
 import {SynonymsResponse} from "../data/SynonymsResponse.ts";
 
-const BACKEND_URL = "http://localhost:8080"
+const BACKEND_URL = "https://lendo-backend-api-k3tawfx6ta-ew.a.run.app"
 
 export async function createWord(word: string): Promise<Response> {
     return await fetch(`${BACKEND_URL}/word`, {
@@ -25,10 +24,6 @@ export async function addSynonym(word: string, synonym: string): Promise<Respons
 
 export async function getSynonyms(word: string): Promise<SynonymsResponse> {
     return getAndSerialize<SynonymsResponse>(`${BACKEND_URL}/synonyms/${word}`);
-}
-
-export async function getWords(): Promise<WordsResponse> {
-    return getAndSerialize<WordsResponse>(`${BACKEND_URL}/words`);
 }
 
 async function getAndSerialize<T>(url: string): Promise<T> {
