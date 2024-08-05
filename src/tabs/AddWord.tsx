@@ -1,8 +1,8 @@
 import {Alert, Button, Snackbar, Stack, TextField} from "@mui/material";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import {FormEvent, useState} from "react";
-import {createWord} from "./api/api.ts";
-import {OperationStatus} from "./data/OperationStatus.ts";
+import {createWord} from "../api/api.ts";
+import {OperationStatus} from "../data/OperationStatus.ts";
 
 export default function AddWord() {
     const [ word, setWord ] = useState<string>("");

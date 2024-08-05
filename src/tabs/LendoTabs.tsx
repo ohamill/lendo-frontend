@@ -7,7 +7,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import EditIcon from '@mui/icons-material/Edit';
 import SearchIcon from '@mui/icons-material/Search';
 import SearchWord from "./SearchWord.tsx";
-import {TabAction} from "./data/Action.ts";
+import {TabAction} from "../data/Action.ts";
 import AddSynonym from "./AddSynonym.tsx";
 import {useState} from "react";
 
