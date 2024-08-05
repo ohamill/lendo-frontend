@@ -14,6 +14,7 @@ steps:
       'deploy', '${_WEB_CLOUD_RUN_SERVICE_NAME}',
       '--image', '${_WEB_FULL_IMAGE_PATH}',
       '--region', '${_IMAGE_REGION}',
+      '--port', '80',
       '--allow-unauthenticated'
     ]
 images:

@@ -1,6 +1,6 @@
 import {SynonymsResponse} from "../data/SynonymsResponse.ts";
 
-const BACKEND_URL = "http://localhost:8080"
+const BACKEND_URL = "https://lendo-backend-api-k3tawfx6ta-ew.a.run.app"
 
 export async function createWord(word: string): Promise<Response> {
     return await fetch(`${BACKEND_URL}/word`, {
