@@ -1,5 +1,5 @@
 import './App.css'
-import LendoTabs from "./LendoTabs.tsx";
+import LendoTabs from "./tabs/LendoTabs.tsx";
 import {useState} from "react";
 import {TabAction} from "./data/Action.ts";
 

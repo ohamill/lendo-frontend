@@ -1,8 +1,8 @@
 import {Alert, Button, Snackbar, Stack, TextField} from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import {addSynonym} from "./api/api.ts";
+import {addSynonym} from "../api/api.ts";
 import {FormEvent, useState} from "react";
-import {OperationStatus} from "./data/OperationStatus.ts";
+import {OperationStatus} from "../data/OperationStatus.ts";
 
 interface AddSynonymProps {
     initialWord: string;

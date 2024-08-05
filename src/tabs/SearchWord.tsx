@@ -1,8 +1,8 @@
 import {useState} from "react";
 import {Alert, CircularProgress, Divider, Snackbar, Stack, TextField, Typography} from "@mui/material";
-import {getSynonyms} from "./api/api.ts";
+import {getSynonyms} from "../api/api.ts";
 import SynonymList from "./SynonymList.tsx";
-import {OperationStatus} from "./data/OperationStatus.ts";
+import {OperationStatus} from "../data/OperationStatus.ts";
 
 interface SearchWordProps {
     onAddSynonym: (s: string) => void;
@@ -47,9 +47,7 @@ export default function SearchWord({ onAddSynonym }: SearchWordProps) {
                         variant={"outlined"}
                         size={"small"}
                         value={searchTerm}
-                        onChange={(e) => {
-                            setSearchTerm(e.target.value);
-                        }}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                         required
                     />
                 </form>
